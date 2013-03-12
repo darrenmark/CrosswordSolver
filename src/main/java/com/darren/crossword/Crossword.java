@@ -23,11 +23,20 @@ public class Crossword {
     private List<LineIntersection> lineIntersections = Constraints.constrainedList(new ArrayList<LineIntersection>(),
             new Constraint<LineIntersection>() {
                 public LineIntersection checkElement(LineIntersection lineIntersection) {
-                    checkArgument(lines.contains(lineIntersection.getLineCharacter1().getLine()));
-                    checkArgument(lines.contains(lineIntersection.getLineCharacter2().getLine()));
+                    checkArgument(instanceExists(lineIntersection.getLineCharacter1().getLine()));
+                    checkArgument(instanceExists(lineIntersection.getLineCharacter2().getLine()));
                     return lineIntersection;
                 }
             });
+
+    private boolean instanceExists(Line line) {
+        for(Line line1: lines) {
+            if(line1 == line) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public Crossword(List<Line> lines, List<LineIntersection> lineIntersections) {
         this.lines.addAll(lines);
@@ -98,5 +107,13 @@ public class Crossword {
             }
         }
         throw new IllegalArgumentException("No line found with id " + id);
+    }
+
+    @Override
+    public String toString() {
+        return "Crossword{" +
+                "lines=" + lines +
+                ", lineIntersections=" + lineIntersections +
+                '}';
     }
 }

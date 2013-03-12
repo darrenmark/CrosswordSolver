@@ -22,8 +22,8 @@ public class LineCharacter {
         return characterPosition;
     }
 
-    public char getCharacter() {
-         return line.getWord().charAt(characterPosition);
+    public String getCharacter() {
+         return line.getWord().substring(characterPosition, characterPosition+1);
     }
 
     @Override

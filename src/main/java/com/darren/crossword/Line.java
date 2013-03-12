@@ -1,6 +1,7 @@
 package com.darren.crossword;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
 
 /**
  */
@@ -14,6 +15,11 @@ public class Line {
         this.id = id;
         this.length = length;
         this.hint = hint;
+    }
+
+    Line(String id, int length, String hint, String word) {
+        this(id, length, hint);
+        this.word = word;
     }
 
     public int getLength() {
@@ -37,8 +43,8 @@ public class Line {
         return word != null;
     }
 
-    public Line makeCopy() {
-        return new Line(id, length, hint);
+    Line makeCopy() {
+        return new Line(id, length, hint, word);
     }
 
     public String getId() {
@@ -69,6 +75,9 @@ public class Line {
     public String toString() {
         return "Line{" +
                 "id='" + id + '\'' +
+                ", length=" + length +
+                ", hint='" + hint + '\'' +
+                ", word='" + word + '\'' +
                 '}';
     }
 }

@@ -21,7 +21,7 @@ public class LineIntersection {
 
     public boolean isIntersectionValid() {
         if(lineCharacter1.getLine().isWordSet() && lineCharacter2.getLine().isWordSet()) {
-            return lineCharacter1.getCharacter() == lineCharacter2.getCharacter();
+            return lineCharacter1.getCharacter().equals(lineCharacter2.getCharacter());
         }
         return false;
     }
@@ -60,6 +60,7 @@ public class LineIntersection {
         return "LineIntersection{" +
                 "lineCharacter1=" + lineCharacter1 +
                 ", lineCharacter2=" + lineCharacter2 +
+                ", isValid=" + isIntersectionValid() +
                 '}';
     }
 }
