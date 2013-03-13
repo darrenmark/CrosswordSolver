@@ -26,6 +26,16 @@ public class LineIntersection {
         return false;
     }
 
+    public boolean isPartiallyValid() {
+        if(!lineCharacter1.getLine().isWordSet() || !lineCharacter2.getLine().isWordSet()) {
+            return true;
+        }
+        if(lineCharacter1.getLine().isWordSet() && lineCharacter2.getLine().isWordSet()) {
+            return lineCharacter1.getCharacter().equals(lineCharacter2.getCharacter());
+        }
+        return false;
+    }
+
     public boolean iSaMatch(Line line1, String word1, Line line2, String word2) {
         return word1.charAt(getLineCharacter(line1).getCharacterPosition()) == word2.charAt(getLineCharacter(line2).getCharacterPosition());
     }

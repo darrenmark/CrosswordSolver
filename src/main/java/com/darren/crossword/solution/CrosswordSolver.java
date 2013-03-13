@@ -8,6 +8,7 @@ import com.google.common.collect.Constraints;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  */
@@ -40,39 +41,38 @@ public class CrosswordSolver {
             lineSolutions.solve();
         }
         for (LineSolutions lineSolutions : allLineSolutions) {
-            System.out.println(lineSolutions.getLine().getId() + lineSolutions.allowedWords());
+            System.out.println(lineSolutions.allowedWords().size() + "  " + lineSolutions.getLine().getId() + lineSolutions.allowedWords());
         }
-        populateResult(allLineSolutions);
+        populateResult(createStack(allLineSolutions), crossword.makeCopy());
         return result;
     }
 
-    private void populateResult(List<LineSolutions> allLineSolutions) {
-        LineSolutions solutions = allLineSolutions.get(0);
-        for (String word : solutions.allowedWords()) {
-            Crossword crossword1 = crossword.makeCopy();
-            crossword1.getLine(solutions.getLine().getId()).setWord(word);
-            List<LineSolutions> lineSolutions = new ArrayList<LineSolutions>(allLineSolutions);
-            lineSolutions.remove(solutions);
-            populate(crossword1, lineSolutions);
+    private Stack<LineSolutions> createStack(List<LineSolutions> lineSolutions) {
+        Stack<LineSolutions> stack = new Stack<LineSolutions>();
+        for(int i = lineSolutions.size() -1; i >= 0; i--) {
+            stack.push(lineSolutions.get(i));
         }
+        return stack;
     }
 
-    private void populate(Crossword crossword1, List<LineSolutions> remainingSolutions) {
+    private void populateResult(Stack<LineSolutions> solutions, Crossword crossword1) {
         if (result.size() >= maxSolution) {
             return;
         }
-        if (remainingSolutions.isEmpty() && crossword1.isCrosswordSolved()) {
+        if (solutions.isEmpty() && crossword1.isCrosswordSolved()) {
             result.add(crossword1.makeCopy());
         }
-        if (remainingSolutions.isEmpty()) {
+        if (solutions.isEmpty() ) {
             return;
         }
-        for (String word : remainingSolutions.get(0).allowedWords()) {
-            crossword1.getLine(remainingSolutions.get(0).getLine().getId()).setWord(word);
-            List<LineSolutions> lineSolutions = new ArrayList<LineSolutions>(remainingSolutions);
-            lineSolutions.remove(remainingSolutions.get(0));
-            populate(crossword1, lineSolutions);
+        LineSolutions lineSolutions = solutions.pop();
+        for(PartialSolution partialSolution: lineSolutions.getPartialSolutions()) {
+            crossword1.getLine(lineSolutions.getLine().getId()).setWord(partialSolution.getWord());
+            if(crossword1.isPartiallySolved()) {
+                populateResult(solutions, crossword1);
+            }
         }
+        solutions.push(lineSolutions);
     }
 
     private List<LineSolutions> getLineSolutions() {

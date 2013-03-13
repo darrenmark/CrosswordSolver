@@ -4,10 +4,7 @@ import com.darren.crossword.Crossword;
 import com.darren.crossword.Line;
 import com.darren.crossword.LineIntersection;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -27,13 +24,9 @@ public class LineSolutions {
         applicableWords.addAll(dictionary.getAvailableWords(line.getLength()));
     }
 
-    public void updateWordsAndPartialSolutions(Set<String> applicableWords) {
+    public void updateWordsAndPartialSolutions(Set<String> applicableWords, List<Line> visitedLines) {
         this.applicableWords.retainAll(applicableWords);
-        for(PartialSolution partialSolution: new ArrayList<PartialSolution>(partialSolutions)) {
-            if(!this.applicableWords.contains(partialSolution.getWord())) {
-                partialSolutions.remove(partialSolution);
-            }
-        }
+        solve(visitedLines);
     }
 
     public List<String> allowedWords() {
@@ -49,6 +42,10 @@ public class LineSolutions {
     }
 
     public void solve() {
+        solve(new ArrayList<Line>());
+    }
+
+    public void solve(List<Line> visitedLines) {
         for(String word: applicableWords) {
             PartialSolution solution = new PartialSolution(word);
             for(LineIntersection lineIntersection: crossword.getLineIntersections(line)) {
@@ -60,7 +57,7 @@ public class LineSolutions {
             }
             addPartialSolution(solution);
         }
-        updateApplicableWords();
+        updateApplicableWords(visitedLines);
     }
 
     private void addPartialSolution(PartialSolution solution) {
@@ -69,9 +66,12 @@ public class LineSolutions {
         }
     }
 
-    private void updateApplicableWords() {
+    private void updateApplicableWords(List<Line> visitedLines) {
+        visitedLines.add(line);
         for(Line line1: crossword.getIntersectingLines(line)) {
-            findLineSolution(line1).updateWordsAndPartialSolutions(allowedWordsFor(line1));
+            if(!visitedLines.contains(line1)) {
+                findLineSolution(line1).updateWordsAndPartialSolutions(allowedWordsFor(line1), visitedLines);
+            }
         }
     }
 
@@ -94,5 +94,9 @@ public class LineSolutions {
             }
         }
         throw new IllegalArgumentException("No line solution found for line " + line);
+    }
+
+    public List<PartialSolution> getPartialSolutions() {
+        return partialSolutions;
     }
 }

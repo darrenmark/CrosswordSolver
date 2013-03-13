@@ -53,6 +53,16 @@ public class Crossword {
         return true;
     }
 
+    public boolean isPartiallySolved() {
+        for(LineIntersection lineIntersection: lineIntersections) {
+            if(!lineIntersection.isPartiallyValid()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
     public List<Line> getIntersectingLines(Line line) {
         List<Line> result = new ArrayList<Line>();
         for(LineIntersection lineIntersection: getLineIntersections(line)) {
