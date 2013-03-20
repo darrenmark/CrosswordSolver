@@ -39,6 +39,10 @@ public class Line {
         this.word = word;
     }
 
+    public void removeWord() {
+        word = null;
+    }
+
     public boolean isWordSet() {
         return word != null;
     }

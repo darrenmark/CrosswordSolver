@@ -36,26 +36,20 @@ public class CrosswordSolver {
 
     public List<Crossword> solve() {
         result.clear();
-        List<LineSolutions> allLineSolutions = getLineSolutions();
-        for (LineSolutions lineSolutions : allLineSolutions) {
-            lineSolutions.solve();
-        }
-        for (LineSolutions lineSolutions : allLineSolutions) {
-            System.out.println(lineSolutions.allowedWords().size() + "  " + lineSolutions.getLine().getId() + lineSolutions.allowedWords());
-        }
+        List<LineWords> allLineSolutions = getLineSolutions();
         populateResult(createStack(allLineSolutions), crossword.makeCopy());
         return result;
     }
 
-    private Stack<LineSolutions> createStack(List<LineSolutions> lineSolutions) {
-        Stack<LineSolutions> stack = new Stack<LineSolutions>();
+    private Stack<LineWords> createStack(List<LineWords> lineSolutions) {
+        Stack<LineWords> stack = new Stack<LineWords>();
         for(int i = lineSolutions.size() -1; i >= 0; i--) {
             stack.push(lineSolutions.get(i));
         }
         return stack;
     }
 
-    private void populateResult(Stack<LineSolutions> solutions, Crossword crossword1) {
+    private void populateResult(Stack<LineWords> solutions, Crossword crossword1) {
         if (result.size() >= maxSolution) {
             return;
         }
@@ -65,20 +59,21 @@ public class CrosswordSolver {
         if (solutions.isEmpty() ) {
             return;
         }
-        LineSolutions lineSolutions = solutions.pop();
-        for(PartialSolution partialSolution: lineSolutions.getPartialSolutions()) {
-            crossword1.getLine(lineSolutions.getLine().getId()).setWord(partialSolution.getWord());
+        LineWords lineSolutions = solutions.pop();
+        for(String word: lineSolutions.getApplicableWords()) {
+            crossword1.getLine(lineSolutions.getLine().getId()).setWord(word);
             if(crossword1.isPartiallySolved()) {
                 populateResult(solutions, crossword1);
             }
+            crossword1.getLine(lineSolutions.getLine().getId()).removeWord();
         }
         solutions.push(lineSolutions);
     }
 
-    private List<LineSolutions> getLineSolutions() {
-        List<LineSolutions> result = new ArrayList<LineSolutions>();
+    private List<LineWords> getLineSolutions() {
+        List<LineWords> result = new ArrayList<LineWords>();
         for (Line line : crossword.getLines()) {
-            result.add(new LineSolutions(crossword, dictionary, line, result));
+            result.add(new LineWords(line, dictionary));
         }
         return result;
     }
